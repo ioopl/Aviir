@@ -2,9 +2,29 @@
 
 A SwiftUI Bluetooth Low Energy (BLE) scanner and proximity radar that discovers nearby devices, visualizes their relative distance, and enables basic peer-to-peer “ping” communication.
 
+- **Favorites Management:**  
+  Save frequently connected devices to Favorites (persisted locally with UserDefaults).  
+  Edit nicknames, remove, or re-add devices.
+
+- **Splash Screen Animation:**  
+  Smooth launch screen with user name displayed in an animated circular path before entering the main App.
+
+- **Permission Awareness:**  
+  Detects when Bluetooth is denied or restricted and displays an in-app alert guiding the user to enable it in Settings.
+
+- **Coordinator Pattern:**  
+  App navigation (Splash → Main → BLE) is managed via `AppCoordinator`, separating UI flow logic from SwiftUI Views.
+
+- **Mock BLE Service for Testing:**  
+  A `MockProximityBLE` class allows developers to preview radar animations and UI states without real BLE hardware.
+
+- **Responsive UI & Empty States:**  
+  Displays clear loading and “No devices found” states when scanning, ensuring good user feedback.
+
+
 ---
 
-## Technical Requirements
+## Explain your architecture
 
 **Architecture:** MVVM + Coordinator Pattern  
 **Language:** Swift  
@@ -77,6 +97,34 @@ Publishes:
 - Open the .xcodeproj or .xcworkspace in Xcode 15.2+.
 - Build & run on two real iPhones (Bluetooth doesn’t work in Simulator).
 - On first launch, allow Bluetooth permission when prompted.
-- Open the app on two devices → they appear on each other’s radar.
+- Open the App on two devices → they appear on each other’s radar.
 - Tap “Ping” to send a pulse animation to the other peer.
-- Note: If you deny Bluetooth access, the app shows a “Go to Settings” alert on the Scanner screen.
+- Note: If you deny Bluetooth access, the App shows a “Go to Settings” alert on the Scanner screen.
+
+---
+
+## Assumptions Made
+
+- Each peer device advertises the same predefined `serviceUUID` and `characteristicUUID`, allowing mutual discovery between iPhones.
+- Device names (`UIDevice.current.name`) are used as friendly peer identifiers for simplicity.
+- Bluetooth(BLE) scanning and advertising are performed simultaneously on each device (central + peripheral roles combined into one service).
+- The BLE range and RSSI-to-distance mapping are approximate and depend on environmental factors.
+- The user will manually re-enable Bluetooth in iOS Settings if access was denied (the App provides a direct prompt to do so).
+- The App is designed for demonstration purposes — not for background or long-term continuous BLE scanning, otherwise it will drain the battery.
+- Favorites persistence uses `UserDefaults` instead of a database like SQLite, Realm, CoreData for simplicity.
+- The project assumes iOS 15.0+ due to SwiftUI 3 and Combine usage.
+- Firmware or external microcontroller communication (if ever integrated) would expose standard GATT characteristics, but this version focuses on iPhone-to-iPhone BLE communication only.
+
+---
+
+## Bonus Features (Optional Enhancements Included)
+
+- **Radar Animation:**  
+  Live circular radar view that visualizes nearby devices by distance (based on RSSI signal strength).
+
+- **Ping Interaction:**  
+  Tap “Ping” to send a BLE payload that triggers a visible pulse animation on the other device.
+
+
+---
+
