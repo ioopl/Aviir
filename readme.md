@@ -1,75 +1,81 @@
-# ProximityBLE
-/*
- On iPhone 12, the app advertises serviceUUID and characteristic charUUID.
- On iPhone 6, the app also advertises and scans for the exact same serviceUUID.
- So they see and talk to each other.
- */
-/*
- Analogy 🗄️
- Imagine the device (the pump) is a filing cabinet with drawers.
- Each drawer = Service (e.g., Pump Control, Temperature Sensors).
- Inside the drawer, there are folders = Characteristics (e.g., suction level, temperature value).
- Each folder has a label (UUID) so your app can find it.
- You can read, write, or subscribe to updates in these folders.
- */
-/*
-  So: UUIDs belong to the Bluetooth services/characteristics, not to the physical chips themselves.
- */
+# Aviir App
 
-# BLE GATT
-/*
- BLE GATT in plain English
- BLE = Bluetooth Low Energy → the technology your phone uses to talk wirelessly to small devices (like pumps, watches, or sensors).
- GATT = Generic Attribute Profile.
- Think of GATT as the "language and dictionary" that your phone and the device agree to use.
- */
-/*
- Analogy 📦
- Think of the board as a restaurant kitchen:
- The chips are the chefs (temperature chef, motor chef, etc.).
- The MCU is the head chef who talks to them.
- The menu that gets handed to you (the app) is the GATT table with UUIDs.
- You don’t order directly from the line cooks (chips).
- You only order from the menu (UUIDs) that the head chef (firmware) wrote.
- */
+A SwiftUI Bluetooth Low Energy (BLE) scanner and proximity radar that discovers nearby devices, visualizes their relative distance, and enables basic peer-to-peer “ping” communication.
 
-# BLEViewModel
-// peers is a dictionary of nearby Bluetooth devices the User phone has detected. So peers means: “Who’s around me right now, and how close are they?
-// The key (String) is each peer’s identifier (name or UUID).
-// The value (Double) is its RSSI — a measure of how strong the Bluetooth signal is (a proxy for distance).
-// e.g. ["Umair-iPhone": -47.0, "Test-iPad": -75.0]
-@Published var peers: [String: Double] = [:]
+---
 
-// pingedNames is a set of peer names we recently sent a "ping" to. This is often used to:
-// wake up a nearby device,
-// confirm it’s responsive,
-// trigger an action (like syncing or playing a sound).
-@Published private(set) var pingedNames: Set<String> = []
+## Technical Requirements
 
-// readyNames are the peers that have completed the handshake which means they are fully connected and ready for interaction.
-// Sequence looks like this:
-// Device A discovers Device B → add to peers
-// Device A sends ping → add to pingedNames
-// Device B replies / confirms ready → move to readyNames
-// So if readyNames contains a peer, you know the connection is stable enough to exchange data or commands.
-@Published var readyNames: Set<String> = []
+**Architecture:** MVVM + Coordinator Pattern  
+**Language:** Swift  
+**UI:** SwiftUI (chosen for declarative layout, state-driven updates, and easy previews)  
+**Frameworks:** CoreBluetooth, Combine  
+
+The App follows a clean separation of concerns:
+- **Model / Service:** `ProximityBLE` handles all CoreBluetooth logic (advertising, scanning, GATT setup, lifecycle).
+- **ViewModel:** e.g. `BLEViewModel`, `MainViewModel` expose observable state (`@Published`) to drive SwiftUI views.
+- **View:** e.g. `BLEView`, `RadarBLEView`, `MainVew` render state and relay user actions upward via closures or VM methods.
+- **Coordinator:** `AppCoordinator` handles navigation flow (Splash → Tabs → Main/BLE).
+
+Error handling, empty states, and permission prompts (for Bluetooth authorization) are implemented to give clear user feedback.
+
+---
+
+## Notes on Decisions/trade-offs (Justification for Using SwiftUI)
+
+SwiftUI was chosen over UIKit to:
+- Faster UI design.
+- Reactively update radar visuals as RSSI changes.
+- Simplify state binding between BLE service and UI (`@Published` + `@ObservedObject`). Alternatives would have been UIKit, Delegates (Protocols), or Closures (Callbacks), NotificationCenter
+- Reduce boilerplate and make previews (`#Preview`) for rapid BLE UI testing.
+- Support cross-platform expansion (watchOS / macOS) with minimal refactor.
+
+---
+
+## Core Components
+
+### **1. ProximityBLE (Service Layer)**
+Handles Bluetooth lifecycle — advertising, scanning, and communication.
+
+**Simplified BLE GATT concept:**
+> BLE = Bluetooth Low Energy → the wireless protocol.  
+> GATT = Generic Attribute Profile → the “language and menu” of data exchange.
+
+The MCU (firmware) exposes a **GATT table** of services & characteristics (UUIDs) that the app can interact with—rather than directly talking to the physical chips.
+
+**Analogy 🗄️**  
+Think of the board as a restaurant kitchen:
+     - The chips are the chefs (temperature chef, motor chef, etc.).
+     - The MCU is the head chef who talks to them.
+     - The menu that gets handed to you (the app) is the GATT table with UUIDs.
+     - We don’t order directly from the line cooks (chips).
+     - We only order from the menu (UUIDs) that the head chef (firmware) wrote.
+
+**Example:**
+    - On one iPhone A, the App advertises serviceUUID and characteristic charUUID.
+    - On second iPhone B, the App also advertises and scans for the exact same serviceUUID.
+    - Each of these has a UUID so the App can find it and talk read/write/subscribe to each other via the App.
+    - The UUIDs belong to the Bluetooth services/characteristics, not to the physical chips themselves.
+
+---
+
+### **2. BLEViewModel**
+Bridges `ProximityBLE` and the UI.  
+Publishes:
+```swift
+@Published var peers: [String: Double]    // nearby devices (name → RSSI)
+@Published var pingedNames: Set<String>   // devices recently pinged
+@Published var readyNames: Set<String>    // devices fully connected & ready
+```
+
+--- 
 
 
-# BLEView
-/*
- BLEView (feature/container view like a View controller)
- Purpose: The full BLE screen that composes the radar + list + buttons.
- Owns UI orchestration: shows empty state, list of peers, buttons for Ping/Favorite, titles.
- Talks to the ViewModel: calls vm.sendPing(to:), reads vm.peers, vm.readyNames, etc.
- Navigation/presentation: decides when to present sheets, alerts, etc. (if any).
-*/
-
-# RadarBLEView
-/*
- RadarBLEView (child/presentational view)
- Purpose: Draws the circular "radar" visualization.
- Inputs only: peers (name → RSSI), pingedNames, readyNames, and an onPing closure.
- No state/persistence/networking. It just renders dots/labels/animations based on the properties we pass.
- Reusable & testable: We could drop it into any screen (even in a different app) and it still work if given the same inputs.
- */
-
+## How to run the project
+- Clone or unzip the repo.
+- Open the .xcodeproj or .xcworkspace in Xcode 15+.
+- Build & run on two real iPhones (Bluetooth doesn’t work in Simulator).
+- On first launch, allow Bluetooth permission when prompted.
+- Open the app on two devices → they appear on each other’s radar.
+- Tap “Ping” to send a pulse animation to the other peer.
+- Note: If you deny Bluetooth access, the app shows a “Go to Settings” alert on the Scanner screen.
