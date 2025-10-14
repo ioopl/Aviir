@@ -61,13 +61,13 @@ Handles Bluetooth lifecycle — advertising, scanning, and communication.
 > BLE = Bluetooth Low Energy → the wireless protocol.  
 > GATT = Generic Attribute Profile → the “language and menu” of data exchange.
 
-The MCU (firmware) exposes a **GATT table** of services & characteristics (UUIDs) that the app can interact with rather than directly talking to the physical chips.
+The MCU (firmware) exposes a **GATT table** of services & characteristics (UUIDs) that the App can interact with rather than directly talking to the physical chips.
 
 **Analogy 🗄️**  
 Think of the board as a restaurant kitchen:
 - The chips are the chefs (temperature chef, motor chef, etc.).
 - The MCU is the head chef who talks to them.
-- The menu that gets handed to you (the app) is the GATT table with UUIDs.
+- The menu that gets handed to you (the App) is the GATT table with UUIDs.
 - We don’t order directly from the line cooks (chips).
 - We only order from the menu (UUIDs) that the head chef (firmware) wrote.
 
@@ -125,6 +125,10 @@ Publishes:
 - **Ping Interaction:**  
   Tap “Ping” to send a BLE payload that triggers a visible pulse animation on the other device.
 
+## Future Enhancements
+
+- **NearbyInteraction/UWB Interaction:**  
+  Nearby Interaction(NI) / (UWB ranging) can be used for precise distance + direction but it requires devices to support the U1 chip (iPhone 11 and newer, excluding SE) hence that part was left out. 
 
 ---
 
