@@ -41,21 +41,22 @@ Handles Bluetooth lifecycle — advertising, scanning, and communication.
 > BLE = Bluetooth Low Energy → the wireless protocol.  
 > GATT = Generic Attribute Profile → the “language and menu” of data exchange.
 
-The MCU (firmware) exposes a **GATT table** of services & characteristics (UUIDs) that the app can interact with—rather than directly talking to the physical chips.
+The MCU (firmware) exposes a **GATT table** of services & characteristics (UUIDs) that the app can interact with rather than directly talking to the physical chips.
 
 **Analogy 🗄️**  
 Think of the board as a restaurant kitchen:
-     - The chips are the chefs (temperature chef, motor chef, etc.).
-     - The MCU is the head chef who talks to them.
-     - The menu that gets handed to you (the app) is the GATT table with UUIDs.
-     - We don’t order directly from the line cooks (chips).
-     - We only order from the menu (UUIDs) that the head chef (firmware) wrote.
+- The chips are the chefs (temperature chef, motor chef, etc.).
+- The MCU is the head chef who talks to them.
+- The menu that gets handed to you (the app) is the GATT table with UUIDs.
+- We don’t order directly from the line cooks (chips).
+- We only order from the menu (UUIDs) that the head chef (firmware) wrote.
 
 **Example:**
-    - On one iPhone A, the App advertises serviceUUID and characteristic charUUID.
-    - On second iPhone B, the App also advertises and scans for the exact same serviceUUID.
-    - Each of these has a UUID so the App can find it and talk read/write/subscribe to each other via the App.
-    - The UUIDs belong to the Bluetooth services/characteristics, not to the physical chips themselves.
+
+- On one iPhone A, the App advertises serviceUUID and characteristic charUUID.
+- On second iPhone B, the App also advertises and scans for the exact same serviceUUID.
+- Each of these has a UUID so the App can find it and talk read/write/subscribe to each other via the App.
+- The UUIDs belong to the Bluetooth services/characteristics, not to the physical chips themselves.
 
 ---
 
@@ -73,7 +74,7 @@ Publishes:
 
 ## How to run the project
 - Clone or unzip the repo.
-- Open the .xcodeproj or .xcworkspace in Xcode 15+.
+- Open the .xcodeproj or .xcworkspace in Xcode 15.2+.
 - Build & run on two real iPhones (Bluetooth doesn’t work in Simulator).
 - On first launch, allow Bluetooth permission when prompted.
 - Open the app on two devices → they appear on each other’s radar.
