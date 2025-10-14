@@ -1,10 +1,3 @@
-//
-//  AviirTests.swift
-//  AviirTests
-//
-//  Created by Umair Hasan on 14/10/2025.
-//
-
 import XCTest
 @testable import Aviir
 

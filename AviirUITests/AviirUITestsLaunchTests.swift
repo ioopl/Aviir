@@ -1,10 +1,3 @@
-//
-//  AviirUITestsLaunchTests.swift
-//  AviirUITests
-//
-//  Created by Umair Hasan on 14/10/2025.
-//
-
 import XCTest
 
 final class AviirUITestsLaunchTests: XCTestCase {
