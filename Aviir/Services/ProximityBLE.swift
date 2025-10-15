@@ -90,6 +90,10 @@ class ProximityBLE: NSObject, ObservableObject {
                                       "ts": Date().timeIntervalSince1970]
         guard let data = try? JSONSerialization.data(withJSONObject: payload) else { return }
         target.writeValue(data, for: ch, type: .withoutResponse)
+
+        let gen = UIImpactFeedbackGenerator(style: .light)
+        gen.impactOccurred()
+        
         print("➡️ sendPing: wrote \(data.count) bytes to \(peerName)")
     }
 
@@ -158,7 +162,10 @@ class ProximityBLE: NSObject, ObservableObject {
 
         if let ping = obj["ping"] as? Bool, ping == true {
             let sender = (obj["name"] as? String) ?? "Peer"
-            print("🔔 PING from \(sender)")
+            print("🔔 PING received from \(sender)")
+            let gen = UIImpactFeedbackGenerator(style: .light)
+            gen.impactOccurred()
+            
             DispatchQueue.main.async {
                 self.pingedNames.insert(sender)
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
