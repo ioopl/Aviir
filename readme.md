@@ -1,5 +1,7 @@
 # Aviir App
 
+<img width="1024" height="1024" alt="app-icon" src="https://github.com/user-attachments/assets/712277c8-b3b1-4f33-b6ae-f89e3cb65168" />
+
 A SwiftUI Bluetooth Low Energy (BLE) scanner and proximity radar that discovers nearby devices, visualizes their relative distance, and enables basic peer-to-peer “ping” communication.
 
 - **Favorites Management:**  
